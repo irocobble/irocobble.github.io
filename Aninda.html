@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aninda Majumdar | Embedded Systems</title>
+<meta name="description" content="ECE undergraduate building embedded systems, custom PCBs and sensing hardware.">
+<style>
+  :root {
+    --silver: #C9BABC;
+    --thistle: #DBCFDE;
+    --steel: #939FB4;
+    --slate: #53687E;
+    --blush: #F5DDDD;
+    --ink: #2F3F51;          /* darker slate for readable body text */
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--blush); color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.65;
+  }
+  ::selection { background: var(--thistle); color: var(--ink); }
+  a { color: var(--slate); }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 0 22px; }
+  .mono { font-family: var(--mono); font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--slate); }
+
+  /* scroll-progress trace on the left edge */
+  #trace { position: fixed; left: 10px; top: 0; width: 2px; height: 100vh; background: rgba(147,159,180,.35); z-index: 5; }
+  #trace i { display: block; width: 100%; height: 100%; background: var(--slate); transform-origin: top; transform: scaleY(0); }
+  @media (max-width: 700px) { #trace { display: none; } }
+
+  nav { position: sticky; top: 0; background: rgba(245,221,221,.88); backdrop-filter: blur(6px); border-bottom: 1px solid var(--silver); z-index: 4; }
+  nav .wrap { display: flex; justify-content: space-between; align-items: center; height: 54px; }
+  nav a.logo { font-family: var(--mono); font-weight: 700; text-decoration: none; color: var(--ink); }
+  nav ul { list-style: none; display: flex; gap: 22px; }
+  nav ul a { font-family: var(--mono); font-size: .8rem; text-decoration: none; color: var(--slate); position: relative; }
+  nav ul a::after { content: ""; position: absolute; left: 0; bottom: -3px; height: 1px; width: 0; background: var(--slate); transition: width .25s; }
+  nav ul a:hover::after { width: 100%; }
+
+  /* hero */
+  .hero { padding: 64px 0 36px; display: grid; grid-template-columns: 1.1fr .9fr; gap: 24px; align-items: center; }
+  .hero h1 { font-size: clamp(2.2rem, 6vw, 3.5rem); line-height: 1.1; margin: 12px 0 16px; letter-spacing: -.02em; }
+  .hero h1 span { background: linear-gradient(transparent 62%, var(--thistle) 62%); }
+  .hero p { max-width: 460px; }
+  .btns { margin-top: 26px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { font-family: var(--mono); font-size: .82rem; padding: 10px 18px; border: 1px solid var(--slate); text-decoration: none; color: var(--slate); transition: all .2s; }
+  .btn.solid { background: var(--slate); color: var(--blush); }
+  .btn:hover { background: var(--ink); border-color: var(--ink); color: var(--blush); transform: translateY(-2px); }
+  @media (max-width: 760px) { .hero { grid-template-columns: 1fr; } }
+
+  /* hero pcb art */
+  svg.pcb { width: 100%; height: auto; }
+  .tr { fill: none; stroke: var(--steel); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+        stroke-dasharray: 600; stroke-dashoffset: 600; animation: draw 2.4s ease forwards; }
+  .tr:nth-child(2) { animation-delay: .25s; } .tr:nth-child(3) { animation-delay: .5s; }
+  .tr:nth-child(4) { animation-delay: .75s; } .tr:nth-child(5) { animation-delay: 1s; }
+  .sig { fill: none; stroke: var(--slate); stroke-width: 2.6; stroke-linecap: round; stroke-dasharray: 18 582; stroke-dashoffset: 0; animation: pulse 3.2s linear 2.4s infinite; opacity: 0; animation-fill-mode: forwards; }
+  .pad { fill: var(--blush); stroke: var(--slate); stroke-width: 2; opacity: 0; animation: pop .4s ease forwards; }
+  .chip { fill: var(--thistle); stroke: var(--slate); stroke-width: 2; opacity: 0; animation: pop .6s ease .3s forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @keyframes pop { to { opacity: 1; } }
+  @keyframes pulse { 0% { stroke-dashoffset: 0; opacity: 1; } 100% { stroke-dashoffset: -600; opacity: 1; } }
+
+  section { padding: 56px 0 24px; }
+  h2 { font-size: 1.6rem; letter-spacing: -.01em; margin: 6px 0 28px; }
+
+  /* projects: asymmetric rows */
+  .proj { display: grid; grid-template-columns: 90px 1fr; gap: 20px; padding: 26px 0; border-top: 1px solid var(--silver); }
+  .proj .num { font-family: var(--mono); font-size: 2.6rem; font-weight: 700; color: var(--steel); line-height: 1; transition: color .25s, transform .25s; }
+  .proj:hover .num { color: var(--slate); transform: translateX(4px); }
+  .proj h3 { font-size: 1.25rem; margin-bottom: 4px; }
+  .proj .meta { margin-bottom: 12px; }
+  .proj ul { margin: 0 0 14px 18px; }
+  .proj li { margin-bottom: 4px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .tags span { font-family: var(--mono); font-size: .72rem; background: var(--thistle); color: var(--ink); padding: 2px 9px; }
+  .wip { font-family: var(--mono); font-size: .68rem; background: var(--slate); color: var(--blush); padding: 1px 8px; margin-left: 8px; vertical-align: middle; }
+  .proj a.go { font-family: var(--mono); font-size: .82rem; text-decoration: none; border-bottom: 1px solid var(--slate); }
+  .proj a.go:hover { background: var(--thistle); }
+  @media (max-width: 700px) { .proj { grid-template-columns: 1fr; gap: 6px; } .proj .num { font-size: 1.8rem; } }
+
+  /* skills */
+  .skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 0; border: 1px solid var(--silver); }
+  .skills div { padding: 18px 20px; border: 1px solid var(--silver); margin: -1px 0 0 -1px; transition: background .2s; }
+  .skills div:hover { background: var(--thistle); }
+  .skills h3 { font-family: var(--mono); font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: var(--slate); margin-bottom: 6px; }
+
+  .about p { max-width: 620px; margin-bottom: 10px; }
+
+  footer { margin-top: 56px; background: var(--slate); color: var(--blush); padding: 40px 0; }
+  footer h2 { margin-bottom: 14px; }
+  footer a { color: var(--blush); }
+  footer .links { display: flex; gap: 22px; flex-wrap: wrap; margin-bottom: 14px; font-family: var(--mono); font-size: .88rem; }
+  footer small { color: var(--thistle); }
+
+  /* reveal on scroll */
+  .rv { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; }
+  .rv.on { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .rv { opacity: 1; transform: none; transition: none; }
+    .tr, .pad, .chip { animation: none; stroke-dashoffset: 0; opacity: 1; }
+    .sig { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="trace"><i></i></div>
+
+<nav>
+  <div class="wrap">
+    <a class="logo" href="#top">AM_</a>
+    <ul>
+      <li><a href="#projects">projects</a></li>
+      <li><a href="#skills">skills</a></li>
+      <li><a href="#about">about</a></li>
+      <li><a href="#contact">contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main id="top">
+  <div class="wrap hero">
+    <div>
+      <div class="mono">ECE undergrad &middot; VIT-AP</div>
+      <h1>I build <span>embedded hardware</span> from schematic to firmware.</h1>
+      <p>Custom PCBs, the C that runs on them, and sensors wired into systems that actually work. Currently into edge sensing, and learning CAD.</p>
+      <div class="btns">
+        <a class="btn solid" href="#projects">see projects</a>
+        <a class="btn" href="resume.pdf">resume</a>
+      </div>
+    </div>
+    <svg class="pcb" viewBox="0 0 420 320" aria-hidden="true">
+      <path class="tr" d="M20 60 H120 L150 90 H210"/>
+      <path class="tr" d="M20 130 H90 L120 160 H210"/>
+      <path class="tr" d="M20 200 H110 L140 230 H210"/>
+      <path class="tr" d="M20 270 H200 L230 300"/>
+      <path class="tr" d="M290 90 H340 L370 60 H410"/>
+      <path class="tr" d="M290 160 H410"/>
+      <path class="tr" d="M290 230 H340 L370 260 H410"/>
+      <rect class="chip" x="210" y="70" width="80" height="180" rx="4"/>
+      <path class="sig" d="M20 60 H120 L150 90 H210"/>
+      <path class="sig" style="animation-delay:3.4s" d="M20 200 H110 L140 230 H210"/>
+      <path class="sig" style="animation-delay:4.1s" d="M290 160 H410"/>
+      <circle class="pad" style="animation-delay:.6s" cx="20" cy="60" r="6"/>
+      <circle class="pad" style="animation-delay:.8s" cx="20" cy="130" r="6"/>
+      <circle class="pad" style="animation-delay:1s" cx="20" cy="200" r="6"/>
+      <circle class="pad" style="animation-delay:1.2s" cx="20" cy="270" r="6"/>
+      <circle class="pad" style="animation-delay:1.8s" cx="410" cy="60" r="6"/>
+      <circle class="pad" style="animation-delay:2s" cx="410" cy="160" r="6"/>
+      <circle class="pad" style="animation-delay:2.2s" cx="410" cy="260" r="6"/>
+    </svg>
+  </div>
+
+  <section id="projects">
+    <div class="wrap">
+      <div class="mono rv">01 / work</div>
+      <h2 class="rv">Projects</h2>
+
+      <article class="proj rv">
+        <div class="num">01</div>
+        <div>
+          <h3>Acoustic Localization &amp; Human Sensing Edge Node</h3>
+          <div class="mono meta">2026</div>
+          <div class="tags"><span>K210</span><span>ESP32</span><span>LoRa</span><span>GNSS</span><span>IMU</span><span>KiCad</span><span>C</span><span>Python</span></div>
+          <ul>
+            <li>Two-board search-and-rescue node: an 8-mic I&sup2;S array board plus a 4-layer main board with ESP32, LoRa, GNSS and IMU.</li>
+            <li>K210 firmware in C for synchronized multi-channel capture, voice detection and GCC-PHAT direction-of-arrival.</li>
+            <li>Python tooling: recorder, dataset QC and a live dashboard.</li>
+          </ul>
+          <a class="go" href="https://github.com/irocobble/CA_LR_ES">view on github &rarr;</a>
+        </div>
+      </article>
+
+      <article class="proj rv">
+        <div class="num">02</div>
+        <div>
+          <h3>Wi-Fi CSI Activity Recognition Board</h3>
+          <div class="mono meta">2025 &ndash; 2026</div>
+          <div class="tags"><span>ESP32-S3</span><span>ESP-IDF</span><span>FreeRTOS</span><span>SG2002</span><span>KiCad</span></div>
+          <ul>
+            <li>Custom 80&times;80&nbsp;mm board integrating dual ESP32-S3 and a Sophgo SG2002.</li>
+            <li>Firmware streams Wi-Fi CSI over UART at 921,600 baud for device-free activity recognition.</li>
+            <li>Compact EfficientNetV2-based model runs on the SG2002 (trained with teammates).</li>
+          </ul>
+          <a class="go" href="https://github.com/irocobble/CSI_collection">view on github &rarr;</a>
+        </div>
+      </article>
+
+      <article class="proj rv">
+        <div class="num">03</div>
+        <div>
+          <h3>STM32 8&times;8 LED Matrix Driver <span class="wip">in progress</span></h3>
+          <div class="mono meta">2026</div>
+          <div class="tags"><span>STM32F103</span><span>KiCad</span><span>USB-C</span><span>BJT drivers</span></div>
+          <ul>
+            <li>4-layer custom PCB driving an 8&times;8 matrix with transistor-based multiplexing.</li>
+            <li>Discrete high-side and low-side BJT stages, power/ground planes and ESD protection.</li>
+            <li>Next: timer-driven multiplexing firmware with BAM brightness control and a 3D-modelled enclosure.</li>
+          </ul>
+          <a class="go" href="https://github.com/irocobble/LED_Matrix">view on github &rarr;</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="skills">
+    <div class="wrap">
+      <div class="mono rv">02 / toolbox</div>
+      <h2 class="rv">Skills</h2>
+      <div class="skills rv">
+        <div><h3>Hardware</h3>KiCad, multi-layer PCB design, soldering &amp; wiring, power regulation, ESD protection</div>
+        <div><h3>Embedded</h3>STM32, ESP32, K210, SG2002, Arduino &middot; C, C++, Python, FreeRTOS</div>
+        <div><h3>Interfacing</h3>I&sup2;C, SPI, UART, I&sup2;S, USB, LoRa, Wi-Fi, BLE, IMU, MEMS mics, GNSS</div>
+        <div><h3>Signals &amp; ML</h3>MATLAB, DSP (FFT, STFT, filtering), librosa, scikit-learn, PyTorch</div>
+        <div><h3>Learning</h3>Fusion 360, 3D printing</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="about">
+    <div class="wrap">
+      <div class="mono rv">03 / hello</div>
+      <h2 class="rv">About</h2>
+      <p class="rv">I'm a third-year ECE student who likes taking an idea all the way to a board on the desk: schematic, layout, firmware, and then debugging whatever doesn't work.</p>
+      <p class="rv">I've led a KiCad PCB workshop and competition for a college tech fest, and got internal recognition at Smart India Hackathon for an IoT project.</p>
+    </div>
+  </section>
+</main>
+
+<footer id="contact">
+  <div class="wrap">
+    <h2>Contact</h2>
+    <div class="links">
+      <a href="mailto:majumdaraninda135@gmail.com">majumdaraninda135@gmail.com</a>
+      <a href="https://github.com/irocobble">github</a>
+      <a href="https://www.linkedin.com/in/aninda-majumdar-426957352/">linkedin</a>
+    </div>
+    <small>&copy; 2026 Aninda Majumdar</small>
+  </div>
+</footer>
+
+<script>
+  // reveal on scroll
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } });
+  }, { threshold: .12 });
+  document.querySelectorAll('.rv').forEach(function (el) { io.observe(el); });
+
+  // scroll progress trace
+  var bar = document.querySelector('#trace i');
+  function prog() {
+    var h = document.documentElement;
+    var p = h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight);
+    bar.style.transform = 'scaleY(' + p + ')';
+  }
+  addEventListener('scroll', prog, { passive: true }); prog();
+</script>
+</body>
+</html>
